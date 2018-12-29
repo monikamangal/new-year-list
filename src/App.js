@@ -1,28 +1,78 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
+import React, {Component} from 'react';
+
+import AddListForm from './components/addListForm';
+import List from './components/list';
+
 import './App.css';
 
 class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
-  }
+    constructor() {
+        super();
+
+        this.state = {
+            open: false,
+            lists: [],
+            openList: false
+        }
+    }
+
+    openForm = () => {
+        this.setState({
+            open: true
+        })
+    };
+
+    closeForm = () => {
+        this.setState({
+            open: false
+        })
+    };
+
+    saveList = (listName) => {
+        let {lists} = this.state;
+        lists.push(listName);
+
+        this.setState({
+            lists: lists
+        })
+    };
+
+    openList = () => {
+        this.setState({
+            openList: true
+        })
+    };
+
+    closeList = () => {
+        this.setState({
+            openList: false
+        })
+    };
+
+    render() {
+        const {lists} = this.state;
+
+        return (
+            <div className='app'>
+                <header className='app-header'>New Year 2019!!</header>
+                <div className='app-content'>
+                    <div className='app-content_list-box'>
+                        <button className='list' onClick={this.openList}>new list</button>
+                        {lists.map((listName) => {
+                            return(
+                                <button className='list' onClick={this.openList}>{listName}</button>
+                            )
+                        })}
+                        <button className='add-list' onClick={this.openForm}>Add List</button>
+                    </div>
+                </div>
+
+                <AddListForm open={this.state.open} closeForm={this.closeForm} saveList={this.saveList}/>
+                <List openList={this.state.openList} closeList={this.closeList}/>
+
+            </div>
+        );
+    }
 }
 
 export default App;

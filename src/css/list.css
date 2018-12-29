@@ -1,0 +1,66 @@
+.modal-content {
+    position: absolute;
+    width: 600px;
+    min-height: 200px;
+    background-color: white;
+    padding: 5px;
+    box-shadow: 5px 10px;
+    top: 20%;
+    left: 30%;
+}
+
+.modal-content_list {
+    display: flex;
+    flex-direction: row;
+}
+
+.modal-content_list-item {
+    width: 50%;
+}
+
+.list-block {
+    max-height: 200px;
+    overflow-y: scroll;
+}
+
+.modal-content_form {
+    margin: 10px;
+    text-align: left;
+}
+
+.list-name {
+    font-size: 20px;
+    font-weight: bold;
+    padding-bottom: 20px;
+}
+
+.item {
+    cursor: pointer;
+}
+
+.item-done {
+    text-decoration: line-through;
+}
+
+.list-action {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.list-action_cancel {
+    height: 20px;
+    background-color: red;
+    color: white;
+    width: 20%;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.list-action_save {
+    height: 20px;
+    background-color: green;
+    color: white;
+    width: 20%;
+    cursor: pointer;
+}

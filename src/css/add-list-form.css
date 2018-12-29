@@ -1,0 +1,39 @@
+.modal-content {
+    position: absolute;
+    width: 500px;
+    min-height: 200px;
+    background-color: white;
+    padding: 5px;
+    box-shadow: 5px 10px;
+    top: 20%;
+    left: 30%;
+}
+
+.modal-content_form {
+    margin: 10px;
+    text-align: left;
+}
+
+.list-block {
+    max-height: 200px;
+    overflow-y: scroll;
+}
+
+.modal-content_form-name {
+    border:0;
+    font-size: 20px;
+}
+
+.form-field {
+    display: flex;
+    text-align: left;
+    margin: 10px 0;
+}
+
+.add-item_action {
+    height: 20px;
+    background-color: green;
+    color: white;
+    width: 20%;
+    cursor: pointer;
+}
