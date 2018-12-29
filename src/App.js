@@ -13,11 +13,13 @@ class App extends Component {
         this.state = {
             open: false,
             lists: [],
-            openList: false
+            openList: false,
+            list: {}
         }
     }
 
     componentDidMount() {
+        auth.signInAnonymously();
         auth.onAuthStateChanged((currentUser) => {
             if (currentUser) {
                 database.ref('/').on('value', (snapshot) => {
@@ -45,18 +47,21 @@ class App extends Component {
         })
     };
 
-    saveList = (listName) => {
+    saveList = (list) => {
         let {lists} = this.state;
-        lists.push(listName);
+        lists.push(list);
 
         this.setState({
             lists: lists
         })
     };
 
-    openList = () => {
+    openList = (list) => {
+
+        console.log(list);
         this.setState({
-            openList: true
+            openList: true,
+            list: list
         })
     };
 
@@ -67,25 +72,24 @@ class App extends Component {
     };
 
     render() {
-        const {lists} = this.state;
+        const {lists, open, openList, list} = this.state;
 
         return (
             <div className='app'>
                 <header className='app-header'>New Year 2019!!</header>
                 <div className='app-content'>
                     <div className='app-content_list-box'>
-                        <button className='list' onClick={this.openList}>new list</button>
-                        {lists.map((listName) => {
+                        {lists.map((list) => {
                             return(
-                                <button className='list' onClick={this.openList}>{listName}</button>
+                                <button className='list' onClick={() => this.openList(list)}>{list.name}</button>
                             )
                         })}
                         <button className='add-list' onClick={this.openForm}>Add List</button>
                     </div>
                 </div>
 
-                <AddListForm open={this.state.open} closeForm={this.closeForm} saveList={this.saveList}/>
-                <List openList={this.state.openList} closeList={this.closeList}/>
+                <AddListForm open={open} closeForm={this.closeForm} saveList={this.saveList}/>
+                {openList && <List closeList={this.closeList} list={list}/>}
 
             </div>
         );

@@ -15,7 +15,11 @@
 }
 
 .modal-content_list-item {
-    width: 50%;
+    width: 48%;
+    border: 1px solid black;
+    margin: 10px;
+    padding-left: 10px;
+    box-shadow: 2px 3px;
 }
 
 .list-block {
@@ -31,7 +35,6 @@
 .list-name {
     font-size: 20px;
     font-weight: bold;
-    padding-bottom: 20px;
 }
 
 .item {
@@ -49,7 +52,7 @@
 }
 
 .list-action_cancel {
-    height: 20px;
+    height: 30px;
     background-color: red;
     color: white;
     width: 20%;
@@ -58,7 +61,7 @@
 }
 
 .list-action_save {
-    height: 20px;
+    height: 30px;
     background-color: green;
     color: white;
     width: 20%;

@@ -22,6 +22,8 @@
 .modal-content_form-name {
     border:0;
     font-size: 20px;
+    width: 100%;
+    margin-bottom: 10px;
 }
 
 .form-field {
@@ -31,7 +33,7 @@
 }
 
 .add-item_action {
-    height: 20px;
+    height: 30px;
     background-color: green;
     color: white;
     width: 20%;

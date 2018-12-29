@@ -10,16 +10,23 @@ class AddListForm extends Component {
         this.state = {
             listItems: [],
             itemValue: '',
-            listName: ''
+            listName: '',
+            userName: ''
         }
     }
 
-    addItems = (item) => {
-        let {listItems} = this.state;
+    addItems = () => {
+        let {listItems, itemValue} = this.state;
+        const item = {
+            'description': itemValue,
+            'status': false
+        };
+
         listItems.push(item);
 
         this.setState({
-            listItems: listItems
+            listItems: listItems,
+            itemValue: ''
         })
     };
 
@@ -35,26 +42,43 @@ class AddListForm extends Component {
         })
     };
 
-    saveList = (listName) => {
+    userNameChange = (e) => {
+        this.setState({
+            userName: e.target.value
+        })
+    };
+
+    saveList = () => {
+        const {listItems, listName, userName} = this.state;
+
+        const list = {
+            'added': new Date(),
+            'addedBy': userName,
+            'name': listName,
+            'items': listItems
+        };
+        console.log(list);
+
         this.props.closeForm();
-        this.props.saveList(listName);
+        this.props.saveList(list);
     };
 
     render() {
-        const {listItems, itemValue, listName} = this.state;
+        const {listItems, itemValue, listName, userName} = this.state;
 
         return (
             <Modal open={this.props.open} onClose={this.props.closeForm}>
                 <div className='modal-content'>
                     <div className='modal-content_form'>
                         <input placeholder='List Name...' className='modal-content_form-name' onChange={this.listNameChange} value={listName}/>
+                        <input placeholder='Your Name...' className='modal-content_form-name' onChange={this.userNameChange} value={userName}/>
                         <AddItems addItems={this.addItems} itemValue={itemValue} handleChange={this.handleChange}/>
                         <ul className='list-block'>
                         {listItems.map((item, i) => {
-                            return <li key={i}>{item}</li>
+                            return <li key={i}>{item.description}</li>
                         })}
                         </ul>
-                        <button className='add-item_action' onClick={() => this.saveList(listName)}>Save List</button>
+                        <button className='add-item_action' onClick={this.saveList}>Save List</button>
                     </div>
                 </div>
             </Modal>
@@ -67,7 +91,7 @@ function AddItems(props) {
     return (
         <div className='form-field'>
             <input style={{'width': '80%'}} type='text' value={props.itemValue} placeholder='Enter item...' onChange={props.handleChange}/>
-            <button className='add-item_action' onClick={() => props.addItems(props.itemValue)}>Add Item</button>
+            <button className='add-item_action' onClick={props.addItems}>Add Item</button>
         </div>
     )
 }

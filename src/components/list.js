@@ -3,29 +3,40 @@ import Modal from '@material-ui/core/Modal';
 
 import '../css/list.css';
 
-const dummyList = {
-    listName: 'Foo',
-    itemsDone: ['first', 'second', 'third', 'fourth', 'fifth', 'first', 'second', 'third', 'fourth', 'fifth', 'first', 'second', 'third', 'fourth', 'fifth', 'first', 'second', 'third', 'fourth', 'fifth', 'first', 'second', 'third', 'fourth', 'fifth'],
-    itemsPending: ['sixth very very very very long long text for the list item', 'seventh', 'eight', 'ninth', 'tenth'],
-};
-
 class List extends React.Component {
     constructor() {
         super();
 
         this.state = {
-            itemsDone: dummyList.itemsDone,
-            itemsPending: dummyList.itemsPending
+            itemsDone: [],
+            itemsPending: []
         }
     }
 
-    removeFromDone = (item) => {
-        let {itemsDone, itemsPending} = this.state;
-        const index = itemsDone.indexOf(item);
-        if (index > -1) {
-            itemsDone.splice(index, 1);
+    componentDidMount() {
+        const items = this.props.list.items;
+        if(items !== undefined) {
+            const itemsDone = items.filter((item) => {
+                return item.status === true;
+            });
+            const itemsPending = items.filter((item) => {
+                return item.status === false;
+            });
+
+            this.setState({
+                itemsDone: itemsDone,
+                itemsPending: itemsPending
+            });
         }
-        itemsPending.push(item);
+    }
+
+    removeFromDone = (selected) => {
+        let {itemsDone, itemsPending} = this.state;
+        itemsDone = itemsDone.filter((item) => {
+            return item.description !== selected.description
+        });
+
+        itemsPending.push(selected);
 
         this.setState({
             itemsDone: itemsDone,
@@ -33,49 +44,55 @@ class List extends React.Component {
         })
     };
 
-    removeFromPending = (item) => {
+    removeFromPending = (selected) => {
         let {itemsDone, itemsPending} = this.state;
-        const index = itemsPending.indexOf(item);
-        if (index > -1) {
-            itemsPending.splice(index, 1);
-        }
-        itemsDone.push(item);
+        itemsPending = itemsPending.filter((item) => {
+            return item.description !== selected.description
+        });
+
+        itemsDone.push(selected);
 
         this.setState({
             itemsDone: itemsDone,
             itemsPending: itemsPending
         })
+    };
+
+    UpdateList = () => {
+        // todo
     };
 
     render() {
         const {itemsDone, itemsPending} = this.state;
+        const {list} = this.props;
 
         return (
-            <Modal open={this.props.openList} onClose={this.props.closeList}>
+            <Modal open={true} onClose={this.props.closeList}>
                 <div className='modal-content'>
                     <div className='modal-content_form'>
-                        <p className='list-name'>{dummyList.listName}</p>
+                        <p className='list-name'>Hello {list.addedBy} !!</p>
+                        <p className='list-name'>Welcome to {list.name}</p>
                         <div className='modal-content_list'>
                             <div className='modal-content_list-item'>
-                                <h3>Items Done</h3>
+                                <p>Items Done</p>
                                 <ul className='list-block'>
                                     {itemsDone.map((item, i) => {
-                                        return <li key={i} className='item-done item' onClick={() => this.removeFromDone(item)}>{item}</li>
+                                        return <li key={i} className='item-done item' onClick={() => this.removeFromDone(item)}>{item.description}</li>
                                     })}
                                 </ul>
                             </div>
                             <div className='modal-content_list-item'>
-                                <h3>Items Pending</h3>
+                                <p>Items Pending</p>
                                 <ul className='list-block'>
                                     {itemsPending.map((item, i) => {
-                                        return <li key={i} className='item' onClick={() => this.removeFromPending(item)}>{item}</li>
+                                        return <li key={i} className='item' onClick={() => this.removeFromPending(item)}>{item.description}</li>
                                     })}
                                 </ul>
                             </div>
                         </div>
                         <div className='list-action'>
                             <button className='list-action_cancel' onClick={this.props.closeList}>Cancel</button>
-                            <button className='list-action_save'>Save List</button>
+                            <button className='list-action_save' onClick={this.UpdateList}>Update</button>
                         </div>
                     </div>
                 </div>
