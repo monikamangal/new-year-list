@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 
 import AddListForm from './components/addListForm';
 import List from './components/list';
+import { auth, database } from './components/Firebase/firebase';
 
 import './App.css';
 
@@ -14,6 +15,22 @@ class App extends Component {
             lists: [],
             openList: false
         }
+    }
+
+    componentDidMount() {
+        auth.onAuthStateChanged((currentUser) => {
+            if (currentUser) {
+                database.ref('/').on('value', (snapshot) => {
+                    this.setState({lists: snapshot.val().filter(va => va !== null)})
+                    // ...
+                });
+            } else {
+                // User is signed out.
+                // ...
+            }
+            // ...
+        });
+
     }
 
     openForm = () => {
