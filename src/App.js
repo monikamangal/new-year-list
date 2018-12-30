@@ -109,26 +109,30 @@ class App extends Component {
         this.updateList(null);
     };
 
-    shareList = (email) => {
-        const {currentUser, id, sharedWith} = this.state;
-        sharedWith.push(email);
+    shareList = (email, action) => {
+        let {currentUser, id, sharedWith} = this.state;
+        if (action === 'remove') {
+            sharedWith = sharedWith.filter((val) => val !== email);
+        } else {
+            sharedWith.push(email);
+        }
 
-        const shareList = {
-            sharedBy: currentUser.uid,
-            sharedByEmail: currentUser.email,
-            sharedWith: sharedWith
-        };
-        database.ref('/share').child(id).set(shareList);
-
-        alert('list shared');
+        if (sharedWith.length <= 0) {
+            database.ref('/share').child(id).set(null);
+        } else {
+            const shareList = {
+                sharedBy: currentUser.uid,
+                sharedByEmail: currentUser.email,
+                sharedWith: sharedWith
+            };
+            database.ref('/share').child(id).set(shareList);
+        }
     };
 
     openList = (list, id, shared) => {
-        const {sharedWith} = this.state;
-
         database.ref('/share/' + id).on('value', (snapshot) => {
             this.setState({
-                sharedWith: snapshot.val() !== null ? sharedWith.concat(snapshot.val().sharedWith): sharedWith
+                sharedWith: snapshot.val() !== null ? snapshot.val().sharedWith: []
             })
         });
 
@@ -164,7 +168,7 @@ class App extends Component {
     }
 
     render() {
-        const {lists, open, openList, list, shared, sharedList} = this.state;
+        const {lists, open, openList, list, shared, sharedList, sharedWith} = this.state;
         let items = [];
         lists.forEach((list, id) => {
             items.push(
@@ -205,6 +209,7 @@ class App extends Component {
                                    updateList={this.updateList}
                                    deleteList={this.deleteList}
                                    shareList={this.shareList}
+                                   sharedWith={sharedWith}
                 />}
 
             </div>

@@ -102,9 +102,13 @@ class List extends React.Component {
         this.props.shareList(email);
     };
 
+    removeFromShare = (email) => {
+        this.props.shareList(email, 'remove');
+    };
+
     render() {
         const {itemsDone, itemsPending} = this.state;
-        const {list} = this.props;
+        const {list, sharedWith} = this.props;
 
         return (
             <Modal open={true} onClose={this.props.closeList}>
@@ -129,6 +133,14 @@ class List extends React.Component {
                                 </ul>
                             </div>
                         </div>
+                        {(sharedWith.length > 0) && <div className='modal-content_shared'>
+                            <p>Shared with</p>
+                            <ul className='list-block'>
+                                {sharedWith.map((item, i) => {
+                                    return <li key={i} className='item' onClick={() => this.removeFromShare(item)}>{item}</li>
+                                })}
+                            </ul>
+                        </div>}
                         {!this.props.shared && [<div className='form-field'>
                             <input style={{'width': '80%'}} type='text' placeholder='Add new item...' ref={this.newItem}/>
                             <button className='add-item_action' onClick={this.addNewItem}>Add Item</button>
