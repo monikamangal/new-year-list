@@ -133,7 +133,7 @@ class List extends React.Component {
                                 </ul>
                             </div>
                         </div>
-                        {(sharedWith.length > 0) && <div className='modal-content_shared'>
+                        {(sharedWith.length > 0 && !this.props.shared ) && <div className='modal-content_shared'>
                             <p>Shared with</p>
                             <ul className='list-block'>
                                 {sharedWith.map((item, i) => {
