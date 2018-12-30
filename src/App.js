@@ -128,7 +128,7 @@ class App extends Component {
 
         database.ref('/share/' + id).on('value', (snapshot) => {
             this.setState({
-                sharedWith: sharedWith.concat(snapshot.val().sharedWith)
+                sharedWith: snapshot.val() !== null ? sharedWith.concat(snapshot.val().sharedWith): sharedWith
             })
         });
 
