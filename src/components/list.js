@@ -8,6 +8,7 @@ class List extends React.Component {
     constructor() {
         super();
         this.newItem = React.createRef();
+        this.email = React.createRef();
 
         this.state = {
             itemsDone: [],
@@ -92,13 +93,22 @@ class List extends React.Component {
         this.setState({
             itemsPending: itemsPending
         })
+    };
 
+    shareList = () => {
+        const email = this.email.current.value;
+        this.email.current.value = '';
 
+        this.props.shareList(email);
+    };
+
+    removeFromShare = (email) => {
+        this.props.shareList(email, 'remove');
     };
 
     render() {
         const {itemsDone, itemsPending} = this.state;
-        const {list} = this.props;
+        const {list, sharedWith} = this.props;
 
         return (
             <Modal open={true} onClose={this.props.closeList}>
@@ -123,14 +133,26 @@ class List extends React.Component {
                                 </ul>
                             </div>
                         </div>
-                        <div className='form-field'>
+                        {(sharedWith.length > 0) && <div className='modal-content_shared'>
+                            <p>Shared with</p>
+                            <ul className='list-block'>
+                                {sharedWith.map((item, i) => {
+                                    return <li key={i} className='item' onClick={() => this.removeFromShare(item)}>{item}</li>
+                                })}
+                            </ul>
+                        </div>}
+                        {!this.props.shared && [<div className='form-field'>
                             <input style={{'width': '80%'}} type='text' placeholder='Add new item...' ref={this.newItem}/>
                             <button className='add-item_action' onClick={this.addNewItem}>Add Item</button>
-                        </div>
+                        </div>,
+                        <div className='form-field'>
+                            <input style={{'width': '80%'}} type='text' placeholder='Enter email...' ref={this.email}/>
+                            <button className='add-item_action' onClick={this.shareList}>Share List</button>
+                        </div>,
                         <div className='list-action'>
                             <button className='list-action_cancel' onClick={this.props.deleteList}>Delete</button>
                             <button className='list-action_save' onClick={this.UpdateList}>Update</button>
-                        </div>
+                        </div>]}
                     </div>
                 </div>
             </Modal>
