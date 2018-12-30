@@ -25,7 +25,7 @@ class App extends Component {
             this.setState({currentUser: currentUser || {}});
             if (currentUser) {
                 database.ref('/' + currentUser.uid + '/list').on('value', (snapshot) => {
-                    this.setState({lists: snapshot.val() !== undefined ? snapshot.val().filter(va => va !== null) : []})
+                    this.setState({lists: snapshot.val() !== null ? snapshot.val().filter(va => va !== null) : []})
                 });
 
             } else {
