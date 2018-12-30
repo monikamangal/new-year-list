@@ -16,3 +16,5 @@ export default firebase;
 export const auth = firebase.auth();
 export const database = firebase.database();
 export const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
+googleAuthProvider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+
