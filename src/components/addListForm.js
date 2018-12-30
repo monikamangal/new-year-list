@@ -12,7 +12,6 @@ class AddListForm extends Component {
             listItems: [],
             itemValue: '',
             listName: '',
-            userName: ''
         }
     }
 
@@ -20,7 +19,8 @@ class AddListForm extends Component {
         let {listItems, itemValue} = this.state;
         const item = {
             'description': itemValue,
-            'status': false
+            'status': false,
+            'updatedDate': moment(new Date()).format('MMMM Do YYYY'),
         };
 
         listItems.push(item);
@@ -43,18 +43,11 @@ class AddListForm extends Component {
         })
     };
 
-    userNameChange = (e) => {
-        this.setState({
-            userName: e.target.value
-        })
-    };
-
     saveList = () => {
-        const {listItems, listName, userName} = this.state;
+        const {listItems, listName} = this.state;
 
         const list = {
             'added': moment(new Date()).format('MMMM Do YYYY'),
-            'addedBy': userName,
             'name': listName,
             'items': listItems
         };
@@ -64,14 +57,13 @@ class AddListForm extends Component {
     };
 
     render() {
-        const {listItems, itemValue, listName, userName} = this.state;
+        const {listItems, itemValue, listName} = this.state;
 
         return (
             <Modal open={this.props.open} onClose={this.props.closeForm}>
                 <div className='modal-content'>
                     <div className='modal-content_form'>
                         <input placeholder='List Name...' className='modal-content_form-name' onChange={this.listNameChange} value={listName}/>
-                        <input placeholder='Your Name...' className='modal-content_form-name' onChange={this.userNameChange} value={userName}/>
                         <AddItems addItems={this.addItems} itemValue={itemValue} handleChange={this.handleChange}/>
                         <ul className='list-block'>
                         {listItems.map((item, i) => {

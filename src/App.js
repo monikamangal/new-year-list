@@ -33,6 +33,22 @@ class App extends Component {
                     })
                 });
 
+                database.ref('/list/' + currentUser.uid).on('child_removed', (snapshot) => {
+                    lists.delete(snapshot.key);
+
+                    this.setState({
+                        lists: lists
+                    })
+                });
+
+                database.ref('/list/' + currentUser.uid).on('child_changed', (snapshot) => {
+                    lists.set(snapshot.key, snapshot.val());
+
+                    this.setState({
+                        lists: lists
+                    })
+                });
+
             } else {
                 this.setState({
                     open: false,
@@ -68,6 +84,10 @@ class App extends Component {
         this.closeList();
     };
 
+    deleteList = () => {
+        this.updateList(null);
+    };
+
     openList = (list, id) => {
         this.setState({
             openList: true,
@@ -95,6 +115,7 @@ class App extends Component {
         return <img onClick={this.signOut}
                     src={this.state.currentUser.photoURL}
                     alt={this.state.currentUser.displayName}
+                    className='current-user-image'
         />
     }
 
@@ -111,16 +132,20 @@ class App extends Component {
             <div className='app'>
                 <header className='app-header'>New Year 2019!!</header>
                 <div className='app-content'>
-                    <div className='app-content_list-box'>
-                        <span>{this.state.currentUser.email ? this.displayCurrentUser() :
-                            <a href="#" onClick={this.signIn}>Sign In</a>}</span>
+                    {!this.state.currentUser.email && <span><a href="#" onClick={this.signIn}>Sign In</a> to new year list</span>}
+                    {this.state.currentUser.email && <div className='app-content_list-box'>
+                        {this.displayCurrentUser()}
                         {items}
                         <button key={'add-item'} className='add-list' onClick={this.openForm}>Add List</button>
-                    </div>
+                    </div>}
                 </div>
 
                 <AddListForm open={open} closeForm={this.closeForm} saveList={this.saveList}/>
-                {openList && <List closeList={this.closeList} list={list} updateList={this.updateList}/>}
+                {openList && <List closeList={this.closeList}
+                                   list={list}
+                                   updateList={this.updateList}
+                                   deleteList={this.deleteList}
+                />}
 
             </div>
         );
