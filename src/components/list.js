@@ -36,6 +36,8 @@ class List extends React.Component {
             return item.description !== selected.description
         });
 
+        selected.status = false;
+
         itemsPending.push(selected);
 
         this.setState({
@@ -50,6 +52,8 @@ class List extends React.Component {
             return item.description !== selected.description
         });
 
+        selected.status = true;
+
         itemsDone.push(selected);
 
         this.setState({
@@ -59,7 +63,14 @@ class List extends React.Component {
     };
 
     UpdateList = () => {
-        // todo
+        let {itemsDone, itemsPending} = this.state;
+
+        const list = {
+            ...this.props.list,
+            items: itemsDone.concat(itemsPending)
+        };
+
+        this.props.updateList(list);
     };
 
     render() {

@@ -61,10 +61,18 @@ class App extends Component {
        database.ref('/list').child(currentUser.uid).push(list);
     };
 
-    openList = (list) => {
+    updateList = (list) => {
+        const {id, currentUser} = this.state;
+        database.ref('/list').child(currentUser.uid).child(id).set(list);
+
+        this.closeList();
+    };
+
+    openList = (list, id) => {
         this.setState({
             openList: true,
-            list: list
+            list: list,
+            id: id
         })
     };
 
@@ -93,9 +101,9 @@ class App extends Component {
     render() {
         const {lists, open, openList, list} = this.state;
         let items = [];
-        lists.forEach((list, k) => {
+        lists.forEach((list, id) => {
             items.push(
-                <button key={k} className='list' onClick={() => this.openList(list)}>{list.name}</button>
+                <button key={id} className='list' onClick={() => this.openList(list, id)}>{list.name}</button>
             )
         });
 
@@ -103,16 +111,16 @@ class App extends Component {
             <div className='app'>
                 <header className='app-header'>New Year 2019!!</header>
                 <div className='app-content'>
-                    <span>{this.state.currentUser.email ? this.displayCurrentUser() :
-                        <a href="#" onClick={this.signIn}>Sign In</a>}</span>
                     <div className='app-content_list-box'>
+                        <span>{this.state.currentUser.email ? this.displayCurrentUser() :
+                            <a href="#" onClick={this.signIn}>Sign In</a>}</span>
                         {items}
                         <button key={'add-item'} className='add-list' onClick={this.openForm}>Add List</button>
                     </div>
                 </div>
 
                 <AddListForm open={open} closeForm={this.closeForm} saveList={this.saveList}/>
-                {openList && <List closeList={this.closeList} list={list}/>}
+                {openList && <List closeList={this.closeList} list={list} updateList={this.updateList}/>}
 
             </div>
         );
