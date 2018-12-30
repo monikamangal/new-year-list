@@ -13,6 +13,8 @@ class App extends Component {
         this.state = {
             open: false,
             lists: new Map(),
+            sharedList: new Map(),
+            sharedDetails: new Map(),
             openList: false,
             list: {},
             currentUser: {}
@@ -20,7 +22,7 @@ class App extends Component {
     }
 
     componentDidMount() {
-        let {lists} = this.state;
+        let {lists, sharedList, sharedDetails} = this.state;
 
         auth.onAuthStateChanged((currentUser) => {
             this.setState({currentUser: currentUser || {}});
@@ -49,6 +51,24 @@ class App extends Component {
                     })
                 });
 
+                database.ref('/share').on('child_added', (snapshot) => {
+                    let sharedDetail = snapshot.val();
+                    let isEligible = sharedDetail.sharedWith.some(value => value === currentUser.email);
+
+                    if (isEligible) {
+                        database.ref('/list/' + sharedDetail.sharedBy).child(snapshot.key).on('value', (snapshot) => {
+                            sharedList.set(snapshot.key, snapshot.val());
+                            sharedDetails.set(snapshot.key, sharedDetail.sharedByEmail)
+
+                            this.setState({
+                                sharedList: sharedList,
+                                sharedDetails: sharedDetails
+                            })
+                        });
+
+                    }
+                });
+
             } else {
                 this.setState({
                     open: false,
@@ -73,8 +93,8 @@ class App extends Component {
     };
 
     saveList = (list) => {
-       let {currentUser} = this.state;
-       database.ref('/list').child(currentUser.uid).push(list);
+        let {currentUser} = this.state;
+        database.ref('/list').child(currentUser.uid).push(list);
     };
 
     updateList = (list) => {
@@ -88,9 +108,10 @@ class App extends Component {
         this.updateList(null);
     };
 
-    openList = (list, id) => {
+    openList = (list, id, shared) => {
         this.setState({
             openList: true,
+            shared: shared,
             list: list,
             id: id
         })
@@ -120,11 +141,18 @@ class App extends Component {
     }
 
     render() {
-        const {lists, open, openList, list} = this.state;
+        const {lists, open, openList, list, shared, sharedList} = this.state;
         let items = [];
         lists.forEach((list, id) => {
             items.push(
-                <button key={id} className='list' onClick={() => this.openList(list, id)}>{list.name}</button>
+                <button key={id} className='list' onClick={() => this.openList(list, id, false)}>{list.name}</button>
+            )
+        });
+
+        let sharedItems = [];
+        sharedList.forEach((list, id) => {
+            sharedItems.push(
+                <button key={id} className='list' onClick={() => this.openList(list, id, true)}>{list.name + "*"}</button>
             )
         });
 
@@ -132,10 +160,17 @@ class App extends Component {
             <div className='app'>
                 <header className='app-header'>New Year 2019!!</header>
                 <div className='app-content'>
-                    {!this.state.currentUser.email && <span><a href="#" onClick={this.signIn}>Sign In</a> to new year list</span>}
+                    {!this.state.currentUser.email &&
+                    <span><a href="#" onClick={this.signIn}>Sign In</a> to new year list</span>}
                     {this.state.currentUser.email && <div className='app-content_list-box'>
                         {this.displayCurrentUser()}
                         {items}
+
+                        {sharedItems.length !== 0 && <div>
+                            {sharedItems}
+                        </div>
+                        }
+
                         <button key={'add-item'} className='add-list' onClick={this.openForm}>Add List</button>
                     </div>}
                 </div>
@@ -143,6 +178,7 @@ class App extends Component {
                 <AddListForm open={open} closeForm={this.closeForm} saveList={this.saveList}/>
                 {openList && <List closeList={this.closeList}
                                    list={list}
+                                   shared={shared}
                                    updateList={this.updateList}
                                    deleteList={this.deleteList}
                 />}
