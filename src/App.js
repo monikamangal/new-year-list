@@ -17,7 +17,8 @@ class App extends Component {
             sharedDetails: new Map(),
             openList: false,
             list: {},
-            currentUser: {}
+            currentUser: {},
+            sharedWith: []
         }
     }
 
@@ -108,7 +109,29 @@ class App extends Component {
         this.updateList(null);
     };
 
+    shareList = (email) => {
+        const {currentUser, id, sharedWith} = this.state;
+        sharedWith.push(email);
+
+        const shareList = {
+            sharedBy: currentUser.uid,
+            sharedByEmail: currentUser.email,
+            sharedWith: sharedWith
+        };
+        database.ref('/share').child(id).set(shareList);
+
+        alert('list shared');
+    };
+
     openList = (list, id, shared) => {
+        const {sharedWith} = this.state;
+
+        database.ref('/share/' + id).on('value', (snapshot) => {
+            this.setState({
+                sharedWith: sharedWith.concat(snapshot.val().sharedWith)
+            })
+        });
+
         this.setState({
             openList: true,
             shared: shared,
@@ -181,6 +204,7 @@ class App extends Component {
                                    shared={shared}
                                    updateList={this.updateList}
                                    deleteList={this.deleteList}
+                                   shareList={this.shareList}
                 />}
 
             </div>

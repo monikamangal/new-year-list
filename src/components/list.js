@@ -8,6 +8,7 @@ class List extends React.Component {
     constructor() {
         super();
         this.newItem = React.createRef();
+        this.email = React.createRef();
 
         this.state = {
             itemsDone: [],
@@ -92,8 +93,13 @@ class List extends React.Component {
         this.setState({
             itemsPending: itemsPending
         })
+    };
 
+    shareList = () => {
+        const email = this.email.current.value;
+        this.email.current.value = '';
 
+        this.props.shareList(email);
     };
 
     render() {
@@ -123,14 +129,18 @@ class List extends React.Component {
                                 </ul>
                             </div>
                         </div>
-                        {!this.props.shared && <div className='form-field'>
+                        {!this.props.shared && [<div className='form-field'>
                             <input style={{'width': '80%'}} type='text' placeholder='Add new item...' ref={this.newItem}/>
                             <button className='add-item_action' onClick={this.addNewItem}>Add Item</button>
-                        </div>}
-                        {!this.props.shared && <div className='list-action'>
+                        </div>,
+                        <div className='form-field'>
+                            <input style={{'width': '80%'}} type='text' placeholder='Enter email...' ref={this.email}/>
+                            <button className='add-item_action' onClick={this.shareList}>Share List</button>
+                        </div>,
+                        <div className='list-action'>
                             <button className='list-action_cancel' onClick={this.props.deleteList}>Delete</button>
                             <button className='list-action_save' onClick={this.UpdateList}>Update</button>
-                        </div>}
+                        </div>]}
                     </div>
                 </div>
             </Modal>
