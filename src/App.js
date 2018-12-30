@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 
 import AddListForm from './components/addListForm';
 import List from './components/list';
-import { auth, database } from './components/Firebase/firebase';
+import {auth, database, googleAuthProvider} from './components/Firebase/firebase';
 
 import './App.css';
 
@@ -14,25 +14,29 @@ class App extends Component {
             open: false,
             lists: [],
             openList: false,
-            list: {}
+            list: {},
+            currentUser: {}
         }
     }
 
     componentDidMount() {
-        auth.signInAnonymously();
-        auth.onAuthStateChanged((currentUser) => {
-            if (currentUser) {
-                database.ref('/').on('value', (snapshot) => {
-                    this.setState({lists: snapshot.val().filter(va => va !== null)})
-                    // ...
-                });
-            } else {
-                // User is signed out.
-                // ...
-            }
-            // ...
-        });
 
+        auth.onAuthStateChanged((currentUser) => {
+            this.setState({currentUser: currentUser || {}});
+            if (currentUser) {
+                database.ref('/' + currentUser.uid + '/list').on('value', (snapshot) => {
+                    this.setState({lists: snapshot.val() !== undefined ? snapshot.val().filter(va => va !== null) : []})
+                });
+
+            } else {
+                this.setState({
+                    open: false,
+                    lists: [],
+                    openList: false,
+                    list: {}
+                });
+            }
+        });
     }
 
     openForm = () => {
@@ -71,6 +75,22 @@ class App extends Component {
         })
     };
 
+    // Auth Events
+    signIn() {
+        auth.signInWithPopup(googleAuthProvider);
+    }
+
+    signOut() {
+        auth.signOut();
+    }
+
+    displayCurrentUser() {
+        return <img onClick={this.signOut}
+                    src={this.state.currentUser.photoURL}
+                    alt={this.state.currentUser.displayName}
+        />
+    }
+
     render() {
         const {lists, open, openList, list} = this.state;
 
@@ -78,9 +98,11 @@ class App extends Component {
             <div className='app'>
                 <header className='app-header'>New Year 2019!!</header>
                 <div className='app-content'>
+                    <span>{this.state.currentUser.email ? this.displayCurrentUser() :
+                        <a href="#" onClick={this.signIn}>Sign In</a>}</span>
                     <div className='app-content_list-box'>
                         {lists.map((list) => {
-                            return(
+                            return (
                                 <button className='list' onClick={() => this.openList(list)}>{list.name}</button>
                             )
                         })}
