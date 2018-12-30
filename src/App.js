@@ -12,7 +12,7 @@ class App extends Component {
 
         this.state = {
             open: false,
-            lists: [],
+            lists: new Map(),
             openList: false,
             list: {},
             currentUser: {}
@@ -20,12 +20,17 @@ class App extends Component {
     }
 
     componentDidMount() {
+        let {lists} = this.state;
 
         auth.onAuthStateChanged((currentUser) => {
             this.setState({currentUser: currentUser || {}});
             if (currentUser) {
-                database.ref('/list/' + currentUser.uid).on('value', (snapshot) => {
-                    this.setState({lists: snapshot.val() !== null ? snapshot.val().filter(va => va !== null) : []})
+                database.ref('/list/' + currentUser.uid).on('child_added', (snapshot) => {
+                    lists.set(snapshot.key, snapshot.val());
+
+                    this.setState({
+                        lists: lists
+                    })
                 });
 
             } else {
@@ -52,14 +57,8 @@ class App extends Component {
     };
 
     saveList = (list) => {
-        let {lists, currentUser} = this.state;
-        lists.push(list);
-
+       let {currentUser} = this.state;
        database.ref('/list').child(currentUser.uid).push(list);
-
-        this.setState({
-            lists: lists
-        })
     };
 
     openList = (list) => {
@@ -93,6 +92,12 @@ class App extends Component {
 
     render() {
         const {lists, open, openList, list} = this.state;
+        let items = [];
+        lists.forEach((list, k) => {
+            items.push(
+                <button key={k} className='list' onClick={() => this.openList(list)}>{list.name}</button>
+            )
+        });
 
         return (
             <div className='app'>
@@ -101,11 +106,7 @@ class App extends Component {
                     <span>{this.state.currentUser.email ? this.displayCurrentUser() :
                         <a href="#" onClick={this.signIn}>Sign In</a>}</span>
                     <div className='app-content_list-box'>
-                        {lists.map((list) => {
-                            return (
-                                <button key={list.name} className='list' onClick={() => this.openList(list)}>{list.name}</button>
-                            )
-                        })}
+                        {items}
                         <button key={'add-item'} className='add-list' onClick={this.openForm}>Add List</button>
                     </div>
                 </div>
