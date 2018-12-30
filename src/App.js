@@ -52,8 +52,10 @@ class App extends Component {
     };
 
     saveList = (list) => {
-        let {lists} = this.state;
+        let {lists, currentUser} = this.state;
         lists.push(list);
+
+       database.ref('/list').child(currentUser.uid).push(list);
 
         this.setState({
             lists: lists
@@ -61,8 +63,6 @@ class App extends Component {
     };
 
     openList = (list) => {
-
-        console.log(list);
         this.setState({
             openList: true,
             list: list

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Modal from '@material-ui/core/Modal';
+import moment from 'moment';
 
 import '../css/add-list-form.css';
 
@@ -52,12 +53,11 @@ class AddListForm extends Component {
         const {listItems, listName, userName} = this.state;
 
         const list = {
-            'added': new Date(),
+            'added': moment(new Date()).format('MMMM Do YYYY'),
             'addedBy': userName,
             'name': listName,
             'items': listItems
         };
-        console.log(list);
 
         this.props.closeForm();
         this.props.saveList(list);
