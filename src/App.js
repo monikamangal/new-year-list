@@ -103,10 +103,10 @@ class App extends Component {
                     <div className='app-content_list-box'>
                         {lists.map((list) => {
                             return (
-                                <button className='list' onClick={() => this.openList(list)}>{list.name}</button>
+                                <button key={list.name} className='list' onClick={() => this.openList(list)}>{list.name}</button>
                             )
                         })}
-                        <button className='add-list' onClick={this.openForm}>Add List</button>
+                        <button key={'add-item'} className='add-list' onClick={this.openForm}>Add List</button>
                     </div>
                 </div>
 
