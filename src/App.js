@@ -53,15 +53,15 @@ class App extends Component {
                 });
 
                 database.ref('/share').on('child_added', (snapshot) => {
-                    this.extracted(snapshot, currentUser, sharedList, sharedDetails);
+                    this.updateSharedList(snapshot, currentUser, sharedList, sharedDetails);
                 });
 
                 database.ref('/share').on('child_changed', (snapshot) => {
-                    this.extracted(snapshot, currentUser, sharedList, sharedDetails);
+                    this.updateSharedList(snapshot, currentUser, sharedList, sharedDetails);
                 });
 
                 database.ref('/share').on('child_removed', (snapshot) => {
-                    this.extracted(snapshot, currentUser, sharedList, sharedDetails);
+                    this.updateSharedList(snapshot, currentUser, sharedList, sharedDetails);
                 });
 
             } else {
@@ -75,14 +75,14 @@ class App extends Component {
         });
     }
 
-    extracted(snapshot, currentUser, sharedList, sharedDetails) {
+    updateSharedList = (snapshot, currentUser, sharedList, sharedDetails) => {
         let sharedDetail = snapshot.val();
         let isEligible = sharedDetail.sharedWith.some(value => value === currentUser.email);
 
         if (isEligible) {
             database.ref('/list/' + sharedDetail.sharedBy).child(snapshot.key).on('value', (snapshot) => {
                 sharedList.set(snapshot.key, snapshot.val());
-                sharedDetails.set(snapshot.key, sharedDetail.sharedByEmail)
+                sharedDetails.set(snapshot.key, sharedDetail.sharedByEmail);
 
                 this.setState({
                     sharedList: sharedList,
@@ -96,7 +96,7 @@ class App extends Component {
                 sharedDetails: new Map()
             })
         }
-    }
+    };
 
     openForm = () => {
         this.setState({
