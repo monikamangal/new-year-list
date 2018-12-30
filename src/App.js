@@ -24,7 +24,7 @@ class App extends Component {
         auth.onAuthStateChanged((currentUser) => {
             this.setState({currentUser: currentUser || {}});
             if (currentUser) {
-                database.ref('/' + currentUser.uid + '/list').on('value', (snapshot) => {
+                database.ref('/list/' + currentUser.uid).on('value', (snapshot) => {
                     this.setState({lists: snapshot.val() !== null ? snapshot.val().filter(va => va !== null) : []})
                 });
 
