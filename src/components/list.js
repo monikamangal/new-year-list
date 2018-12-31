@@ -18,7 +18,7 @@ class List extends React.Component {
 
     componentDidMount() {
         const items = this.props.list.items;
-        if(items !== undefined) {
+        if (items !== undefined) {
             const itemsDone = items.filter((item) => {
                 return item.status === true;
             });
@@ -34,37 +34,41 @@ class List extends React.Component {
     }
 
     removeFromDone = (selected) => {
-        let {itemsDone, itemsPending} = this.state;
-        itemsDone = itemsDone.filter((item) => {
-            return item.description !== selected.description
-        });
+        if (!this.props.shared) {
+            let {itemsDone, itemsPending} = this.state;
+            itemsDone = itemsDone.filter((item) => {
+                return item.description !== selected.description
+            });
 
-        selected.status = false;
-        selected.updatedDate = moment(new Date()).format('MMMM Do YYYY');
+            selected.status = false;
+            selected.updatedDate = moment(new Date()).format('MMMM Do YYYY');
 
-        itemsPending.push(selected);
+            itemsPending.push(selected);
 
-        this.setState({
-            itemsDone: itemsDone,
-            itemsPending: itemsPending
-        })
+            this.setState({
+                itemsDone: itemsDone,
+                itemsPending: itemsPending
+            })
+        }
     };
 
     removeFromPending = (selected) => {
-        let {itemsDone, itemsPending} = this.state;
-        itemsPending = itemsPending.filter((item) => {
-            return item.description !== selected.description
-        });
+        if (!this.props.shared) {
+            let {itemsDone, itemsPending} = this.state;
+            itemsPending = itemsPending.filter((item) => {
+                return item.description !== selected.description
+            });
 
-        selected.status = true;
-        selected.updatedDate = moment(new Date()).format('MMMM Do YYYY');
+            selected.status = true;
+            selected.updatedDate = moment(new Date()).format('MMMM Do YYYY');
 
-        itemsDone.push(selected);
+            itemsDone.push(selected);
 
-        this.setState({
-            itemsDone: itemsDone,
-            itemsPending: itemsPending
-        })
+            this.setState({
+                itemsDone: itemsDone,
+                itemsPending: itemsPending
+            })
+        }
     };
 
     UpdateList = () => {
@@ -120,7 +124,8 @@ class List extends React.Component {
                                 <p>Items done</p>
                                 <ul className='list-block'>
                                     {itemsDone.map((item, i) => {
-                                        return <li key={i} className='item-done item' onClick={() => this.removeFromDone(item)}>{item.description}</li>
+                                        return <li key={i} className='item-done item'
+                                                   onClick={() => this.removeFromDone(item)}>{item.description}</li>
                                     })}
                                 </ul>
                             </div>
@@ -128,7 +133,8 @@ class List extends React.Component {
                                 <p>Items pending</p>
                                 <ul className='list-block'>
                                     {itemsPending.map((item, i) => {
-                                        return <li key={i} className='item' onClick={() => this.removeFromPending(item)}>{item.description}</li>
+                                        return <li key={i} className='item'
+                                                   onClick={() => this.removeFromPending(item)}>{item.description}</li>
                                     })}
                                 </ul>
                             </div>
@@ -137,22 +143,25 @@ class List extends React.Component {
                             <p>Shared with</p>
                             <ul className='list-block'>
                                 {sharedWith.map((item, i) => {
-                                    return <li key={i} className='item' onClick={() => this.removeFromShare(item)}>{item}</li>
+                                    return <li key={i} className='item'
+                                               onClick={() => this.removeFromShare(item)}>{item}</li>
                                 })}
                             </ul>
                         </div>}
                         {!this.props.shared && [<div key={'new-item'} className='form-field'>
-                            <input style={{'width': '80%'}} type='text' placeholder='Add new item...' ref={this.newItem}/>
+                            <input style={{'width': '80%'}} type='text' placeholder='Add new item...'
+                                   ref={this.newItem}/>
                             <button className='add-item_action' onClick={this.addNewItem}>Add Item</button>
                         </div>,
-                        <div key={'share-list'} className='form-field'>
-                            <input style={{'width': '80%'}}  type='text' placeholder='Enter email...' ref={this.email}/>
-                            <button className='add-item_action' onClick={this.shareList}>Share List</button>
-                        </div>,
-                        <div key={'actions'} className='list-action'>
-                            <button className='list-action_cancel' onClick={this.props.deleteList}>Delete</button>
-                            <button className='list-action_save' onClick={this.UpdateList}>Update</button>
-                        </div>]}
+                            <div key={'share-list'} className='form-field'>
+                                <input style={{'width': '80%'}} type='text' placeholder='Enter email...'
+                                       ref={this.email}/>
+                                <button className='add-item_action' onClick={this.shareList}>Share List</button>
+                            </div>,
+                            <div key={'actions'} className='list-action'>
+                                <button className='list-action_cancel' onClick={this.props.deleteList}>Delete</button>
+                                <button className='list-action_save' onClick={this.UpdateList}>Update</button>
+                            </div>]}
                     </div>
                 </div>
             </Modal>
