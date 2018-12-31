@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import Modal from '@material-ui/core/Modal';
 import moment from 'moment';
 
-import '../css/add-list-form.css';
-
 class AddListForm extends Component {
     constructor() {
         super();

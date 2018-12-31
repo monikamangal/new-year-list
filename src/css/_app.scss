@@ -1,0 +1,118 @@
+@import '_themes.scss';
+
+@mixin themify($themes: $themes) {
+  @each $theme, $map in $themes {
+
+    .theme-#{$theme} & {
+      $theme-map: () !global;
+      @each $key, $submap in $map {
+        $value: map-get(map-get($themes, $theme), '#{$key}');
+        $theme-map: map-merge($theme-map, ($key: $value)) !global;
+      }
+
+      @content;
+      $theme-map: null !global;
+    }
+
+  }
+}
+
+@function themed($key) {
+  @return map-get($theme-map, $key);
+}
+
+body {
+  font-family: AppleMyungjo, "Times New Roman", Serif;
+  margin: 0;
+}
+
+.app {
+  @include themify($themes) {
+    background-color: themed('backgroundColor');
+  }
+}
+
+.app-header {
+  background-color: #282c34;
+  min-height: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 25px;
+  font-weight: bold;
+}
+
+.app-content {
+  min-height: 800px;
+  margin: 30px;
+}
+
+.app-content_blocks {
+  display: flex;
+}
+
+.app-content_list-box {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  margin: 5px;
+}
+
+.add-list {
+  width: 150px;
+  height: 150px;
+  border: 5px dashed lightgray;
+  font-size: 20px;
+  font-weight: bold;
+  color: lightgray;
+  cursor: pointer;
+  margin: 5px;
+}
+
+.list {
+  width: 150px;
+  height: 150px;
+  border: 5px solid #282c34;
+  font-size: 20px;
+  font-weight: bold;
+  @include themify($themes) {
+    background-color: themed('listColor');
+  }
+  color: #282c34;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.current-user-image {
+  width: 200px;
+  height: 200px;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.current-user-block {
+  width: 210px;
+  height: 400px;
+  border: 2px solid;
+  margin: 10px;
+}
+
+.current-user-theme {
+  margin-left: 10px;
+  width: 80px;
+  height: 24px;
+}
+
+.select-theme-label {
+  margin-left: 10px;
+}
+
+.sign-out {
+  height: 30px;
+  background-color: red;
+  color: white;
+  cursor: pointer;
+  margin-top: 20px;
+}

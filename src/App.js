@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
+import Select from '@material-ui/core/Select';
 
 import AddListForm from './components/addListForm';
 import List from './components/list';
 import {auth, database, googleAuthProvider} from './components/Firebase/firebase';
-
-import './App.css';
 
 class App extends Component {
     constructor() {
@@ -18,7 +17,8 @@ class App extends Component {
             openList: false,
             list: {},
             currentUser: {},
-            sharedWith: []
+            sharedWith: [],
+            theme: 'theme-pink'
         }
     }
 
@@ -153,7 +153,7 @@ class App extends Component {
     openList = (list, id, shared) => {
         database.ref('/share/' + id).on('value', (snapshot) => {
             this.setState({
-                sharedWith: snapshot.val() !== null ? snapshot.val().sharedWith: []
+                sharedWith: snapshot.val() !== null ? snapshot.val().sharedWith : []
             })
         });
 
@@ -171,6 +171,12 @@ class App extends Component {
         })
     };
 
+    selectTheme = (e) => {
+        this.setState({
+            theme: e.target.value
+        })
+    };
+
     // Auth Events
     static signIn() {
         auth.signInWithPopup(googleAuthProvider);
@@ -181,15 +187,29 @@ class App extends Component {
     }
 
     displayCurrentUser() {
-        return <img onClick={App.signOut}
-                    src={this.state.currentUser.photoURL}
-                    alt={this.state.currentUser.displayName}
-                    className='current-user-image'
-        />
+        return (
+            <div className='current-user-block'>
+                <img onClick={App.signOut}
+                     src={this.state.currentUser.photoURL}
+                     alt={this.state.currentUser.displayName}
+                     className='current-user-image'
+                />
+                <p className='select-theme-label'>Hello {this.state.currentUser.displayName}</p>
+                <label className='select-theme-label'>Select Theme</label>
+                <select onChange={this.selectTheme} defaultValue={this.state.theme} className='current-user-theme'>
+                    <option value="theme-pink">Pink</option>
+                    <option value="theme-blue">Blue</option>
+                    <option value="theme-green">Green</option>
+                    <option value="theme-purple">Purple</option>
+                    <option value="theme-yellow">Yellow</option>
+                </select>
+                <button className='select-theme-label sign-out' onClick={App.signOut}>Sign Out</button>
+            </div>
+        )
     }
 
     render() {
-        const {lists, open, openList, list, shared, sharedList, sharedWith} = this.state;
+        const {lists, open, openList, list, shared, sharedList, sharedWith, theme} = this.state;
         let items = [];
         lists.forEach((list, id) => {
             items.push(
@@ -200,39 +220,45 @@ class App extends Component {
         let sharedItems = [];
         sharedList.forEach((list, id) => {
             sharedItems.push(
-                <button key={id} className='list' onClick={() => this.openList(list, id, true)}>{list.name + "*"}</button>
+                <button key={id} className='list'
+                        onClick={() => this.openList(list, id, true)}>{list.name + "*"}</button>
             )
         });
 
         return (
-            <div className='app'>
-                <header className='app-header'>New Year 2019!!</header>
-                <div className='app-content'>
-                    {!this.state.currentUser.email &&
-                    <span><a href="#" onClick={App.signIn}>Sign In</a> to new year list</span>}
-                    {this.state.currentUser.email && <div className='app-content_list-box'>
-                        {this.displayCurrentUser()}
-                        {items}
+            <div className={`${theme}`}>
+                <div className='app'>
+                    <header className='app-header'>New Year 2019!!</header>
+                    <div className='app-content'>
+                        {!this.state.currentUser.email &&
+                        <span><a href="#" onClick={App.signIn}>Sign In</a> to new year list</span>}
+                        {this.state.currentUser.email &&
+                        <div className='app-content_blocks'>
+                            {this.displayCurrentUser()}
+                            <div className='app-content_list-box'>
+                                {items}
 
-                        {sharedItems.length !== 0 && <div>
-                            {sharedItems}
-                        </div>
-                        }
+                                {sharedItems.length !== 0 && <div>
+                                    {sharedItems}
+                                </div>
+                                }
 
-                        <button key={'add-item'} className='add-list' onClick={this.openForm}>Add List</button>
-                    </div>}
+                                <button key={'add-item'} className='add-list' onClick={this.openForm}>Add List</button>
+                            </div>
+                        </div>}
+                    </div>
+
+                    <AddListForm open={open} closeForm={this.closeForm} saveList={this.saveList}/>
+                    {openList && <List closeList={this.closeList}
+                                       list={list}
+                                       shared={shared}
+                                       updateList={this.updateList}
+                                       deleteList={this.deleteList}
+                                       shareList={this.shareList}
+                                       sharedWith={sharedWith}
+                    />}
+
                 </div>
-
-                <AddListForm open={open} closeForm={this.closeForm} saveList={this.saveList}/>
-                {openList && <List closeList={this.closeList}
-                                   list={list}
-                                   shared={shared}
-                                   updateList={this.updateList}
-                                   deleteList={this.deleteList}
-                                   shareList={this.shareList}
-                                   sharedWith={sharedWith}
-                />}
-
             </div>
         );
     }
