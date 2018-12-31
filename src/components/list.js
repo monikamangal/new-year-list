@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import Modal from '@material-ui/core/Modal';
 import moment from 'moment';
 
@@ -133,7 +133,7 @@ class List extends React.Component {
                                 </ul>
                             </div>
                         </div>
-                        {(sharedWith.length > 0 && !this.props.shared ) && <div className='modal-content_shared'>
+                        {sharedWith.length > 0 && !this.props.shared && <div className='modal-content_shared'>
                             <p>Shared with</p>
                             <ul className='list-block'>
                                 {sharedWith.map((item, i) => {
@@ -141,15 +141,15 @@ class List extends React.Component {
                                 })}
                             </ul>
                         </div>}
-                        {!this.props.shared && [<div className='form-field'>
+                        {!this.props.shared && [<div key={'new-item'} className='form-field'>
                             <input style={{'width': '80%'}} type='text' placeholder='Add new item...' ref={this.newItem}/>
                             <button className='add-item_action' onClick={this.addNewItem}>Add Item</button>
                         </div>,
-                        <div className='form-field'>
-                            <input style={{'width': '80%'}} type='text' placeholder='Enter email...' ref={this.email}/>
+                        <div key={'share-list'} className='form-field'>
+                            <input style={{'width': '80%'}}  type='text' placeholder='Enter email...' ref={this.email}/>
                             <button className='add-item_action' onClick={this.shareList}>Share List</button>
                         </div>,
-                        <div className='list-action'>
+                        <div key={'actions'} className='list-action'>
                             <button className='list-action_cancel' onClick={this.props.deleteList}>Delete</button>
                             <button className='list-action_save' onClick={this.UpdateList}>Update</button>
                         </div>]}

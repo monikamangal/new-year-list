@@ -52,16 +52,14 @@ class App extends Component {
                     })
                 });
 
-                database.ref('/share').on('child_added', (snapshot) => {
-                    this.updateSharedList(snapshot, currentUser, sharedList, sharedDetails);
+                this.fetchAndUpdateSharedList(currentUser, sharedList, sharedDetails);
+
+                database.ref('/share').on('child_changed', () => {
+                    this.fetchAndUpdateSharedList(currentUser, sharedList, sharedDetails);
                 });
 
-                database.ref('/share').on('child_changed', (snapshot) => {
-                    this.updateSharedList(snapshot, currentUser, sharedList, sharedDetails);
-                });
-
-                database.ref('/share').on('child_removed', (snapshot) => {
-                    this.updateSharedList(snapshot, currentUser, sharedList, sharedDetails);
+                database.ref('/share').on('child_removed', () => {
+                    this.fetchAndUpdateSharedList(currentUser, sharedList, sharedDetails);
                 });
 
             } else {
@@ -74,6 +72,12 @@ class App extends Component {
             }
         });
     }
+
+    fetchAndUpdateSharedList = (currentUser, sharedList, sharedDetails) => {
+        database.ref('/share').on('child_added', (snapshot) => {
+            this.updateSharedList(snapshot, currentUser, sharedList, sharedDetails);
+        });
+    };
 
     updateSharedList = (snapshot, currentUser, sharedList, sharedDetails) => {
         let sharedDetail = snapshot.val();
@@ -168,16 +172,16 @@ class App extends Component {
     };
 
     // Auth Events
-    signIn() {
+    static signIn() {
         auth.signInWithPopup(googleAuthProvider);
     }
 
-    signOut() {
+    static signOut() {
         auth.signOut();
     }
 
     displayCurrentUser() {
-        return <img onClick={this.signOut}
+        return <img onClick={App.signOut}
                     src={this.state.currentUser.photoURL}
                     alt={this.state.currentUser.displayName}
                     className='current-user-image'
@@ -205,7 +209,7 @@ class App extends Component {
                 <header className='app-header'>New Year 2019!!</header>
                 <div className='app-content'>
                     {!this.state.currentUser.email &&
-                    <span><a href="#" onClick={this.signIn}>Sign In</a> to new year list</span>}
+                    <span><a href="#" onClick={App.signIn}>Sign In</a> to new year list</span>}
                     {this.state.currentUser.email && <div className='app-content_list-box'>
                         {this.displayCurrentUser()}
                         {items}
